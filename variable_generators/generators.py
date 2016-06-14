@@ -133,7 +133,7 @@ def make_access_var(name, agent, target_variable=False, target_value=False,
     Generator function for accessibility variables. Registers with orca.
     """
     @orca.column('nodes', name, cache=False)
-    def func():
+    def func(net):
         nodes = pd.DataFrame(index=net.node_ids)
         flds = [target_variable] if target_variable else []
         if "target_value" in locals():
