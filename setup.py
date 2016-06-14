@@ -13,13 +13,13 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
-    name='autospec',
+    name='variable_generators',
     version='0.1dev',
     description='Auto-specify UrbanSim models',
     long_description=long_description,
     author='UrbanSim Inc.',
     author_email='info@urbansim.com',
-    url='https://github.com/urbansim/autospec',
+    url='https://github.com/urbansim/variable_generators',
     classifiers=[
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
