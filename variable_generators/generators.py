@@ -6,6 +6,11 @@ import orca
 from urbansim.utils import misc
 from urbansim.models import util
 
+try:
+    import pandana
+except ImportError:
+    pass
+
 
 def make_agg_var(agent, geog, geog_id, var_to_aggregate, agg_function):
     """
@@ -94,15 +99,15 @@ def make_proportion_var(agent, geog, geog_id, target_variable, target_value):
 
     return func
 
-def make_dummy_variable(geog_var, geog_id):
+def make_dummy_variable(agent, geog_var, geog_id):
     """
     Generator function for spatial dummy. Registers with orca.
     """
     var_name = geog_var + '_is_' + str(int(geog_id))
-    @orca.column('blocks', var_name, cache=True)
+    @orca.column(agent, var_name, cache=True)
     def func():
-        blocks = orca.get_table('blocks')
-        return (blocks[geog_var] == geog_id).astype('int32')
+        agents = orca.get_table(agent)
+        return (agents[geog_var] == geog_id).astype('int32')
 
     return func
 
