@@ -38,4 +38,3 @@ setup(
         'pandana': ['pandana>=0.1']
     }
 )
-)
