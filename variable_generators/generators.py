@@ -137,11 +137,11 @@ def make_access_var(name, agent, target_variable=False, target_value=False,
         nodes = pd.DataFrame(index=net.node_ids)
         flds = [target_variable] if target_variable else []
         if "target_value" in locals():
-            flds += util.columns_in_filters(target_value)
+            flds += util.columns_in_filters(["%s == %s"%(target_variable,target_value)])
         flds.append('node_id')
         df = orca.get_table(agent).to_frame(flds)
         if "target_value" in locals():
-            df = util.apply_filter_query(df, target_value)
+            df = util.apply_filter_query(df, ["%s == %s"%(target_variable,target_value)])
 
         net.set(df['node_id'], variable=df[target_variable] if target_variable else None)
         nodes[name] = net.aggregate(radius, type=agg_function, decay=decay)
