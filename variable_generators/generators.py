@@ -128,20 +128,28 @@ def make_ratio_var(agent1, agent2, geog):
     return func
     
 def make_access_var(name, agent, target_variable=False, target_value=False,
-                    radius=1000, agg_function='sum', decay='flat', log=True):
+                    radius=1000, agg_function='sum', decay='flat', log=True,
+                    filters=False):
     """
     Generator function for accessibility variables. Registers with orca.
     """
-    @orca.column('nodes', name, cache=False)
+    @orca.column('nodes', name, cache=True, cache_scope='iteration')
     def func(net):
+        print 'Calculating %s' % name
         nodes = pd.DataFrame(index=net.node_ids)
         flds = [target_variable] if target_variable else []
         if target_value:
             flds += util.columns_in_filters(["%s == %s"%(target_variable,target_value)])
+        if filters:
+            flds += util.columns_in_filters(filters)
         flds.append('node_id')
+
         df = orca.get_table(agent).to_frame(flds)
+
         if target_value:
             df = util.apply_filter_query(df, ["%s == %s"%(target_variable,target_value)])
+        if filters:
+            df = util.apply_filter_query(df, filters)
 
         net.set(df['node_id'], variable=df[target_variable] if target_variable else None)
         nodes[name] = net.aggregate(radius, type=agg_function, decay=decay)
