@@ -23,7 +23,7 @@ install:
 - pip install https://github.com/pksohn/urbansim/archive/python3.zip
 - pip install .
 # UPDATE BRANCH LATER
-- cd .. && git clone -b pep8 git@github.com:urbansim/zone_model.git
+- cd .. && git clone git@github.com:urbansim/zone_model.git
 - cd zone_model && pip install .
 - cd zone_model/data && curl -O https://storage.googleapis.com/urbansim/zone_model/model_data.h5
 - cd $TRAVIS_BUILD_DIR && pip install .
