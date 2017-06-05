@@ -18,11 +18,8 @@ install:
   conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip numpy pandas pytest matplotlib scipy statsmodels pyyaml pycodestyle
 - source activate test-environment
 - conda list
-# UPDATE THESE WHEN LATEST VERSIONS PUSHED TO PIP
-- pip install https://github.com/UDST/orca/archive/master.zip
-- pip install https://github.com/pksohn/urbansim/archive/python3.zip
+- pip install orca urbansim
 - pip install .
-# UPDATE BRANCH LATER
 - cd .. && git clone git@github.com:urbansim/zone_model.git
 - cd zone_model && pip install .
 - cd zone_model/data && curl -O https://storage.googleapis.com/urbansim/zone_model/model_data.h5
