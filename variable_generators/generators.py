@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import numpy as np
 import pandas as pd
 
 import orca
@@ -20,7 +19,7 @@ def make_agg_var(agent, geog, geog_id, var_to_aggregate, agg_function):
     """
     var_name = agg_function + '_' + var_to_aggregate
 
-    @orca.column(geog, var_name, cache=False)
+    @orca.column(geog, var_name, cache=True, cache_scope='iteration')
     def func():
         agents = orca.get_table(agent)
         print('Calculating {} of {} for {}'
@@ -54,13 +53,16 @@ def make_agg_var(agent, geog, geog_id, var_to_aggregate, agg_function):
 
 
 def make_disagg_var(from_geog_name, to_geog_name, var_to_disaggregate,
-                    from_geog_id_name):
+                    from_geog_id_name, name_based_on_geography=True):
     """
     Generator function for disaggregating variables. Registers with orca.
     """
-    var_name = from_geog_name + '_' + var_to_disaggregate
+    if name_based_on_geography:
+        var_name = from_geog_name + '_' + var_to_disaggregate
+    else:
+        var_name = var_to_disaggregate
 
-    @orca.column(to_geog_name, var_name, cache=False)
+    @orca.column(to_geog_name, var_name, cache=True, cache_scope='iteration')
     def func():
         print('Disaggregating {} to {} from {}'
               .format(var_to_disaggregate, to_geog_name, from_geog_name))
@@ -79,7 +81,7 @@ def make_size_var(agent, geog, geog_id):
     """
     var_name = 'total_' + agent
 
-    @orca.column(geog, var_name, cache=False)
+    @orca.column(geog, var_name, cache=True, cache_scope='iteration')
     def func():
         agents = orca.get_table(agent)
         print('Calculating number of {} for {}'.format(agent, geog))
@@ -101,7 +103,7 @@ def make_proportion_var(agent, geog, geog_id, target_variable, target_value):
     """
     var_name = 'prop_%s_%s' % (target_variable, int(target_value))
 
-    @orca.column(geog, var_name, cache=False)
+    @orca.column(geog, var_name, cache=True, cache_scope='iteration')
     def func():
         agents = orca.get_table(agent).to_frame(
             columns=[target_variable, geog_id])
@@ -123,9 +125,13 @@ def make_dummy_variable(agent, geog_var, geog_id):
     """
     Generator function for spatial dummy. Registers with orca.
     """
-    var_name = '{}_is_{}'.format(geog_var, str(int(geog_id)))
+    # cache_scope
+    try:
+        var_name = geog_var + '_is_' + str(geog_id)
+    except:
+        var_name = geog_var + '_is_' + str(int(geog_id))
 
-    @orca.column(agent, var_name, cache=True)
+    @orca.column(agent, var_name, cache=True, cache_scope='iteration')
     def func():
         agents = orca.get_table(agent)
         return (agents[geog_var] == geog_id).astype('int32')
@@ -139,7 +145,7 @@ def make_ratio_var(agent1, agent2, geog):
     """
     var_name = 'ratio_%s_to_%s' % (agent1, agent2)
 
-    @orca.column(geog, var_name, cache=False)
+    @orca.column(geog, var_name, cache=True, cache_scope='iteration')
     def func():
         locations = orca.get_table(geog)
         print('Calculating ratio of {} to {} for {}'
@@ -148,6 +154,28 @@ def make_ratio_var(agent1, agent2, geog):
         series = (locations['total_' + agent1]
                   * 1.0
                   / (locations['total_' + agent2] + 1.0))
+        series = series.fillna(0)
+        return series
+
+    return func
+
+
+def make_density_var(agent, geog):
+    """
+    Generator function for density variables. Registers with orca.
+    """
+    var_name = 'density_%s' % (agent)
+
+    @orca.column(geog, var_name, cache=True, cache_scope='iteration')
+    def func():
+        locations = orca.get_table(geog)
+        print ('Calculating density of {} for {}').format(agent, geog)
+        if geog != 'blocks':
+            series = locations['total_' + agent] * 1.0 / (
+            locations['sum_acres'] + 1.0)
+        else:
+            series = locations['total_' + agent] * 1.0 / (
+            locations['acres'] + 1.0)
         series = series.fillna(0)
         return series
 
