@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import numpy as np
 import pandas as pd
 
 import orca
@@ -169,7 +170,7 @@ def make_density_var(agent, geog):
     @orca.column(geog, var_name, cache=True, cache_scope='iteration')
     def func():
         locations = orca.get_table(geog)
-        print ('Calculating density of {} for {}').format(agent, geog)
+        print('Calculating density of {} for {}'.format(agent, geog))
         if geog != 'blocks':
             series = locations['total_' + agent] * 1.0 / (
             locations['sum_acres'] + 1.0)
