@@ -129,7 +129,7 @@ def make_dummy_variable(agent, geog_var, geog_id):
     # cache_scope
     try:
         var_name = geog_var + '_is_' + str(geog_id)
-    except:
+    except Exception:
         var_name = geog_var + '_is_' + str(int(geog_id))
 
     @orca.column(agent, var_name, cache=True, cache_scope='iteration')
@@ -173,10 +173,10 @@ def make_density_var(agent, geog):
         print('Calculating density of {} for {}'.format(agent, geog))
         if geog != 'blocks':
             series = locations['total_' + agent] * 1.0 / (
-            locations['sum_acres'] + 1.0)
+                locations['sum_acres'] + 1.0)
         else:
             series = locations['total_' + agent] * 1.0 / (
-            locations['acres'] + 1.0)
+                locations['acres'] + 1.0)
         series = series.fillna(0)
         return series
 
