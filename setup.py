@@ -15,11 +15,11 @@ with open('README.md', 'r') as f:
 setup(
     name='variable_generators',
     version='0.1dev',
-    description='Auto-specify UrbanSim models',
+    description='Bulk definition of explanatory variables',
     long_description=long_description,
     author='UrbanSim Inc.',
     author_email='info@urbansim.com',
-    url='https://github.com/urbansim/variable_generators',
+    url='https://github.com/udst/variable_generators',
     classifiers=[
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
