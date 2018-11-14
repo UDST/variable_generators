@@ -76,11 +76,11 @@ def make_disagg_var(from_geog_name, to_geog_name, var_to_disaggregate,
     return func
 
 
-def make_size_var(agent, geog, geog_id, cache_scope='step'):
+def make_size_var(agent, geog, geog_id, cache_scope='step', prefix_agent='total'):
     """
     Generator function for size variables. Registers with orca.
     """
-    var_name = 'total_' + agent
+    var_name = prefix_agent + '_' + agent
 
     @orca.column(geog, var_name, cache=True, cache_scope=cache_scope)
     def func():
@@ -98,11 +98,14 @@ def make_size_var(agent, geog, geog_id, cache_scope='step'):
     return func
 
 
-def make_proportion_var(agent, geog, geog_id, target_variable, target_value):
+def make_proportion_var(agent, geog, geog_id, target_variable, target_value, prefix_agent='total'):
     """
     Generator function for proportion variables. Registers with orca.
     """
-    var_name = 'prop_%s_%s' % (target_variable, int(target_value))
+    try:
+        var_name = 'prop_%s_%s' % (target_variable, int(target_value))
+    except Exception:
+        var_name = 'prop_%s_%s' % (target_variable, target_value)
 
     @orca.column(geog, var_name, cache=True, cache_scope='iteration')
     def func():
@@ -115,7 +118,7 @@ def make_proportion_var(agent, geog, geog_id, target_variable, target_value):
         agent_subset = agents[agents[target_variable] == target_value]
         series = (agent_subset.groupby(geog_id).size()
                   * 1.0
-                  / locations['total_' + agent])
+                  / locations[prefix_agent + '_' + agent])
         series = series.fillna(0)
         return series
 
@@ -140,7 +143,7 @@ def make_dummy_variable(agent, geog_var, geog_id):
     return func
 
 
-def make_ratio_var(agent1, agent2, geog):
+def make_ratio_var(agent1, agent2, geog, prefix1='total', prefix2='total'):
     """
     Generator function for ratio variables. Registers with orca.
     """
@@ -152,16 +155,16 @@ def make_ratio_var(agent1, agent2, geog):
         print('Calculating ratio of {} to {} for {}'
               .format(agent1, agent2, geog))
 
-        series = (locations['total_' + agent1]
+        series = (locations[prefix1 + '_' + agent1]
                   * 1.0
-                  / (locations['total_' + agent2] + 1.0))
+                  / (locations[prefix2 + '_' + agent2] + 1.0))
         series = series.fillna(0)
         return series
 
     return func
 
 
-def make_density_var(agent, geog):
+def make_density_var(agent, geog, prefix_agent='total'):
     """
     Generator function for density variables. Registers with orca.
     """
@@ -173,7 +176,7 @@ def make_density_var(agent, geog):
 
         print('Calculating density of {} for {}'.format(agent, geog))
 
-        series = locations['total_' + agent] * 1.0 / (
+        series = locations[prefix_agent + '_' + agent] * 1.0 / (
             locations['sum_acres'] + 1.0)
 
         series = series.fillna(0)
