@@ -14,7 +14,7 @@ except ImportError:
     pass
 
 
-def make_agg_var(agent, geog, geog_id, var_to_aggregate, agg_function):
+def make_agg_var(agent, geog, geog_id, var_to_aggregate, agg_function, how_fillna = None):
     """
     Generator function for aggregation variables. Registers with orca.
     """
@@ -42,10 +42,14 @@ def make_agg_var(agent, geog, geog_id, var_to_aggregate, agg_function):
         # Fillna.
         # For certain functions, must add other options,
         # like puma value or neighboring value
-        if agg_function == 'sum':
-            series = series.fillna(0)
+        if how_fillna is not None:
+            series = how_fillna(series)
         else:
-            series = series.fillna(series.median())
+            if agg_function == 'sum':
+                series = series.fillna(0)
+            else:
+                series = series.fillna(method='ffill')
+                series = series.fillna(method='bfill')
 
         return series
 
