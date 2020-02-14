@@ -76,13 +76,13 @@ def make_disagg_var(from_geog_name, to_geog_name, var_to_disaggregate,
     return func
 
 
-def make_size_var(agent, geog, geog_id, cache_scope='step', prefix_agent='total'):
+def make_size_var(agent, geog, geog_id, cache=True, cache_scope='step', prefix_agent='total'):
     """
     Generator function for size variables. Registers with orca.
     """
     var_name = prefix_agent + '_' + agent
 
-    @orca.column(geog, var_name, cache=True, cache_scope=cache_scope)
+    @orca.column(geog, var_name, cache=cache, cache_scope=cache_scope)
     def func():
         agents = orca.get_table(agent)
         print('Calculating number of {} for {}'.format(agent, geog))
