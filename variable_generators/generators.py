@@ -35,6 +35,10 @@ def make_agg_var(agent, geog, geog_id, var_to_aggregate, agg_function, how_filln
             values = groupby.std().fillna(0)
         if agg_function == 'sum':
             values = groupby.sum().fillna(0)
+        if agg_function == 'max':
+            values = groupby.max().fillna(0)
+        if agg_function == 'min':
+            values = groupby.min().fillna(0)
 
         locations_index = orca.get_table(geog).index
         series = pd.Series(data=values, index=locations_index)
