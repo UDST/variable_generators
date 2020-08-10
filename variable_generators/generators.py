@@ -14,7 +14,7 @@ except ImportError:
     pass
 
 
-def make_agg_var(agent, geog, geog_id, var_to_aggregate, agg_function, how_fillna = None):
+def make_agg_var(agent, geog, geog_id, var_to_aggregate, agg_function, how_fillna=None):
     """
     Generator function for aggregation variables. Registers with orca.
     """
